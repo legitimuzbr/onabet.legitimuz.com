@@ -46,7 +46,7 @@
         <button class="btn btn-light w-100 btn-lg" id="legitimuz-action-verify">Iniciar verificação</button>
     </div>
 
-    <div class="brand text-white mt-4 text-center d-flex justify-content-center align-items-center">
+    <div class="brand text-white mt-4 text-center d-flex justify-content-center align-items-center" onclick="legitimuzLink()" onmouseover="legitimuzLinkOn()" onmouseout="legitimuzLinkOut()" id="brand">
       <small>
           <span>powered by</span>
       </small>
@@ -82,6 +82,19 @@
       if(parametro == "?cpf") {
         document.querySelector("#legitimuz-hydrate-cpf").value = valor
       }
+    }
+
+    function legitimuzLinkOn() {
+      document.querySelector("#brand").style.textDecoration = 'underline';
+      document.querySelector("#brand").style.cursor = 'pointer';
+    }
+
+    function legitimuzLinkOut() {
+      document.querySelector("#brand").style.textDecoration = 'none';
+    }
+
+    function legitimuzLink() {
+      location.href = "https://legitimuz.com/";
     }
 
   </script>
