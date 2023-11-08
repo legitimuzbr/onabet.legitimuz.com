@@ -44,6 +44,7 @@
             <input type="number" class="form-control form-control-lg w-100" placeholder="000.000.000-00" minlength="11" maxlength="14" id="legitimuz-hydrate-cpf">
         </div>
         <button class="btn btn-light w-100 btn-lg" id="legitimuz-action-verify">Iniciar verificação</button>
+        <p class="text-white mt-3 mb-0 d-none" id="aviso">Tente novamente mais tarde.</p>
     </div>
 
     <div class="brand text-white mt-4 text-center d-flex justify-content-center align-items-center" onclick="legitimuzLink()" onmouseover="legitimuzLinkOn()" onmouseout="legitimuzLinkOut()" id="brand">
@@ -82,21 +83,35 @@
 document.addEventListener('DOMContentLoaded', function() {
   var inputCPF = document.getElementById('legitimuz-hydrate-cpf');
   var button = document.getElementById('legitimuz-action-verify');
+  var aviso = document.getElementById('aviso');
+
+  function toggleAviso(shouldShow) {
+    if (shouldShow) {
+      aviso.classList.remove('d-none');
+    } else {
+      aviso.classList.add('d-none');
+    }
+  }
 
   function initializeInput() {
     var lockTime = localStorage.getItem('lockTime');
     var currentTime = new Date().getTime();
     var savedCPF = localStorage.getItem('savedCPF');
 
+    // Determina se o botão deve estar bloqueado e ajusta a visibilidade do aviso.
     if (lockTime && currentTime - lockTime < 86400000) {
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
+      button.disabled = true;
+      toggleAviso(true);
       if (savedCPF) {
         inputCPF.value = savedCPF;
       }
     } else {
       inputCPF.removeAttribute('readonly');
       inputCPF.classList.remove('disabled');
+      button.disabled = false;
+      toggleAviso(false);
     }
   }
 
@@ -107,32 +122,31 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('lockTime', new Date().getTime());
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
-      // O botão não é bloqueado aqui, apenas o input
+      button.disabled = true;
+      toggleAviso(true);
     } else {
       alert('Por favor, digite um CPF válido.');
     }
   }
 
-  // Função independente para bloquear o botão
   window.lockButton = function() {
     var lockTime = localStorage.getItem('lockTime');
     var currentTime = new Date().getTime();
 
-    // Se lockTime ainda não foi setado ou já passou 24h, permita bloquear o botão
-    if (!lockTime || currentTime - lockTime >= 120000) { // 86400000
+    // Se lockTime não foi setado ou já passou 24h, permita bloquear o botão.
+    if (!lockTime || currentTime - lockTime >= 86400000) {
       localStorage.setItem('lockTime', new Date().getTime());
       button.disabled = true;
+      toggleAviso(true);
     } else {
       console.log('O botão já está bloqueado e não pode ser bloqueado novamente até que o tempo de bloqueio expire.');
     }
   };
 
-  // Evento de clique do botão que bloqueia apenas o input
   button.addEventListener('click', lockInput);
-
-  // Verifica e inicializa o estado do input ao carregar a página
   initializeInput();
 });
+
 
 
 
