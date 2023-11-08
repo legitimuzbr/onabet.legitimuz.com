@@ -77,6 +77,50 @@
 
   <script>
 
+    document.addEventListener('DOMContentLoaded', function() {
+  var inputCPF = document.getElementById('legitimuz-hydrate-cpf'); // Substitua com o ID correto do seu input
+  var button = document.getElementById('legitimuz-action-verify'); // Substitua com o ID correto do seu botão
+
+  function initializeInput() {
+    var lockTime = localStorage.getItem('lockTime');
+    var savedCPF = localStorage.getItem('savedCPF');
+    
+    if (lockTime) {
+      var currentTime = new Date().getTime();
+      var timePassed = currentTime - lockTime;
+
+      if (timePassed < 30000) { // 86400000 - 24 horas em milissegundos
+        inputCPF.disabled = true;
+        if (savedCPF) {
+          inputCPF.value = savedCPF; // Preenche o input com o CPF salvo
+        }
+      } else {
+        localStorage.removeItem('lockTime');
+        inputCPF.disabled = false;
+      }
+    } else if (savedCPF) {
+      inputCPF.value = savedCPF; // Preenche o input com o CPF salvo mesmo que não esteja bloqueado
+    }
+  }
+
+  // Evento de clique do botão
+  button.addEventListener('click', function() {
+    var cpfValue = inputCPF.value;
+    if (cpfValue) {
+      localStorage.setItem('savedCPF', cpfValue); // Salva o CPF
+      localStorage.setItem('lockTime', new Date().getTime()); // Armazena o tempo atual
+      inputCPF.disabled = true;
+      // Adicione aqui o resto da lógica que deve acontecer quando o botão é clicado
+    } else {
+      alert('Por favor, digite um CPF válido.');
+    }
+  });
+
+  // Inicializa o campo de entrada ao carregar a página
+  initializeInput();
+});
+
+
     function checkCpf() {
       const parametros = location.search;
       const parametro = parametros.split("=")[0]
