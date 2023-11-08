@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentTime = new Date().getTime();
 
     // Se lockTime ainda não foi setado ou já passou 24h, permita bloquear o botão
-    if (!lockTime || currentTime - lockTime >= 86400000) {
+    if (!lockTime || currentTime - lockTime >= 120000) { // 86400000
       localStorage.setItem('lockTime', new Date().getTime());
       button.disabled = true;
     } else {
