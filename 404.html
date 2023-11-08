@@ -64,11 +64,11 @@
       const legitimuz = Legitimuz({
         host: "https://api.legitimuz.com",
         token: "0a7d1df1-a7f1-44e0-9566-73ee97c2093a",
-        onSuccess: (eventName) => {
-          console.log(eventName); // ocr | facematch
+        onSuccess: (ocr) => {
+          console.log("ocr deu boa");
         },
-        onError: (eventName) => {
-          console.log(eventName); // ocr | facematch
+        onError: (ocr) => {
+          console.log("ocr deu ruim");
         }
       });
 
