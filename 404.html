@@ -66,6 +66,7 @@
         token: "0a7d1df1-a7f1-44e0-9566-73ee97c2093a",
         onSuccess: (ocr) => {
           console.log("ocr deu boa");
+          lockButton()
         },
         onError: (ocr) => {
           console.log("ocr deu ruim");
@@ -79,20 +80,19 @@
   <script>
 
 document.addEventListener('DOMContentLoaded', function() {
-  var inputCPF = document.getElementById('legitimuz-hydrate-cpf'); // ID do seu input
-  var button = document.getElementById('legitimuz-action-verify'); // ID do seu botão
+  var inputCPF = document.getElementById('legitimuz-hydrate-cpf');
+  var button = document.getElementById('legitimuz-action-verify');
 
-  // Função para verificar e aplicar o bloqueio do input
   function initializeInput() {
     var lockTime = localStorage.getItem('lockTime');
     var currentTime = new Date().getTime();
     var savedCPF = localStorage.getItem('savedCPF');
 
-    if (lockTime && currentTime - lockTime < 120000) { // 86400000 24 horas em milissegundos
+    if (lockTime && currentTime - lockTime < 86400000) {
       inputCPF.setAttribute('readonly', true);
-      inputCPF.classList.add('disabled'); // Adicione sua classe de estilo para desabilitado, se necessário
+      inputCPF.classList.add('disabled');
       if (savedCPF) {
-        inputCPF.value = savedCPF; // Preenche o input com o CPF salvo
+        inputCPF.value = savedCPF;
       }
     } else {
       inputCPF.removeAttribute('readonly');
@@ -100,44 +100,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Função para verificar e aplicar o bloqueio do botão
-  function checkButtonLock() {
-    var buttonLockTime = localStorage.getItem('buttonLockTime');
-    if (buttonLockTime && currentTime - buttonLockTime < 120000) {
-      button.disabled = true;
-    } else {
-      button.disabled = false;
-    }
-  }
-
-  // Função para bloquear o botão independentemente
-  function lockButton() {
-    localStorage.setItem('buttonLockTime', new Date().getTime()); // Armazena o tempo atual
-    button.disabled = true; // Desabilita o botão
-  }
-
-  // Evento de clique do botão
-  button.addEventListener('click', function() {
+  function lockInput() {
     var cpfValue = inputCPF.value;
     if (cpfValue) {
-      localStorage.setItem('savedCPF', cpfValue); // Salva o CPF
-      localStorage.setItem('lockTime', new Date().getTime()); // Armazena o tempo atual para o input
+      localStorage.setItem('savedCPF', cpfValue);
+      localStorage.setItem('lockTime', new Date().getTime());
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
-
-      lockButton(); // Chama a função para bloquear o botão independentemente
+      // O botão não é bloqueado aqui, apenas o input
     } else {
       alert('Por favor, digite um CPF válido.');
     }
-  });
+  }
 
-  // Inicializa o estado do input e do botão ao carregar a página
+  // Função independente para bloquear o botão
+  window.lockButton = function() {
+    var lockTime = localStorage.getItem('lockTime');
+    var currentTime = new Date().getTime();
+
+    // Se lockTime ainda não foi setado ou já passou 24h, permita bloquear o botão
+    if (!lockTime || currentTime - lockTime >= 86400000) {
+      localStorage.setItem('lockTime', new Date().getTime());
+      button.disabled = true;
+    } else {
+      console.log('O botão já está bloqueado e não pode ser bloqueado novamente até que o tempo de bloqueio expire.');
+    }
+  };
+
+  // Evento de clique do botão que bloqueia apenas o input
+  button.addEventListener('click', lockInput);
+
+  // Verifica e inicializa o estado do input ao carregar a página
   initializeInput();
-  checkButtonLock();
 });
 
-// Para chamar a função de bloqueio do botão de fora, você pode expor a função lockButton
-window.lockButton = lockButton;
 
 
     function checkCpf() {
