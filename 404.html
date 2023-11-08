@@ -65,11 +65,11 @@
       const legitimuz = Legitimuz({
         host: "https://api.legitimuz.com",
         token: "0a7d1df1-a7f1-44e0-9566-73ee97c2093a",
-        onSuccess: (ocr) => {
+        onSuccess: (facematch) => {
           console.log("ocr deu boa");
           lockButton()
         },
-        onError: (ocr) => {
+        onError: (facematch) => {
           console.log("ocr deu ruim");
           lockButton()
         }
@@ -94,22 +94,28 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function initializeInput() {
-    var lockTime = localStorage.getItem('lockTime');
-    var currentTime = new Date().getTime();
     var savedCPF = localStorage.getItem('savedCPF');
+    var lockTime = localStorage.getItem('lockTime');
+    var buttonLockTime = localStorage.getItem('buttonLockTime');
+    var currentTime = new Date().getTime();
 
-    // Determina se o botão deve estar bloqueado e ajusta a visibilidade do aviso.
+    // Verifica se o input está bloqueado
     if (lockTime && currentTime - lockTime < 86400000) {
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
-      button.disabled = true;
-      toggleAviso(true);
       if (savedCPF) {
         inputCPF.value = savedCPF;
       }
     } else {
       inputCPF.removeAttribute('readonly');
       inputCPF.classList.remove('disabled');
+    }
+
+    // Verifica se o botão está bloqueado
+    if (buttonLockTime && currentTime - buttonLockTime < 86400000) {
+      button.disabled = true;
+      toggleAviso(true);
+    } else {
       button.disabled = false;
       toggleAviso(false);
     }
@@ -122,20 +128,18 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('lockTime', new Date().getTime());
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
-      button.disabled = true;
-      toggleAviso(true);
     } else {
       alert('Por favor, digite um CPF válido.');
     }
   }
 
   window.lockButton = function() {
-    var lockTime = localStorage.getItem('lockTime');
     var currentTime = new Date().getTime();
+    var buttonLockTime = localStorage.getItem('buttonLockTime');
 
-    // Se lockTime não foi setado ou já passou 24h, permita bloquear o botão.
-    if (!lockTime || currentTime - lockTime >= 86400000) {
-      localStorage.setItem('lockTime', new Date().getTime());
+    // Verifica se o botão está bloqueado
+    if (!buttonLockTime || currentTime - buttonLockTime >= 86400000) {
+      localStorage.setItem('buttonLockTime', new Date().getTime());
       button.disabled = true;
       toggleAviso(true);
     } else {
@@ -144,8 +148,13 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   button.addEventListener('click', lockInput);
+
   initializeInput();
 });
+
+
+
+
 
 
 
