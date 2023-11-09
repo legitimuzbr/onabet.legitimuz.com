@@ -44,7 +44,7 @@
             <input type="number" class="form-control form-control-lg w-100" placeholder="000.000.000-00" minlength="11" maxlength="14" id="legitimuz-hydrate-cpf">
         </div>
         <button class="btn btn-light w-100 btn-lg" id="legitimuz-action-verify">Iniciar verificação</button>
-        <p class="text-white mt-3 mb-0 d-none" id="aviso">Tente novamente mais tarde.</p>
+        <p class="text-white mt-3 mb-0 d-none" id="aviso">Tente novamente em <span id="horas"></span> segundos.</p>
     </div>
 
     <div class="brand text-white mt-4 text-center d-flex justify-content-center align-items-center" onclick="legitimuzLink()" onmouseover="legitimuzLinkOn()" onmouseout="legitimuzLinkOut()" id="brand">
@@ -77,6 +77,10 @@
           if(eventName === "facematch") {
             lockButton()
           }
+
+          if(eventName === "ocr") {
+            lockButton()
+          }
           
         }
       });
@@ -91,9 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
   var button = document.getElementById('legitimuz-action-verify');
   var aviso = document.getElementById('aviso');
 
-  function toggleAviso(shouldShow) {
+  function toggleAviso(shouldShow, horas) {
     if (shouldShow) {
       aviso.classList.remove('d-none');
+      document.getElementById("horas").innerText = horas / 1000;
     } else {
       aviso.classList.add('d-none');
     }
@@ -106,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentTime = new Date().getTime();
 
     // Verifica se o input está bloqueado
-    if (lockTime && currentTime - lockTime < 86400000) {
+    if (lockTime && currentTime - lockTime < 30000) {
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
       if (savedCPF) {
@@ -118,9 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Verifica se o botão está bloqueado
-    if (buttonLockTime && currentTime - buttonLockTime < 86400000) {
+    if (buttonLockTime && currentTime - buttonLockTime < 30000) {
       button.disabled = true;
-      toggleAviso(true);
+      toggleAviso(true, currentTime - buttonLockTime);
     } else {
       button.disabled = false;
       toggleAviso(false);
@@ -144,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var buttonLockTime = localStorage.getItem('buttonLockTime');
 
     // Verifica se o botão está bloqueado
-    if (!buttonLockTime || currentTime - buttonLockTime >= 86400000) {
+    if (!buttonLockTime || currentTime - buttonLockTime >= 30000) {
       localStorage.setItem('buttonLockTime', new Date().getTime());
       button.disabled = true;
       toggleAviso(true);
