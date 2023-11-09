@@ -203,7 +203,6 @@
         localStorage.setItem('lockTime', currentTime.toString());
         $inputCPF.prop('readonly', true).addClass('disabled');
         startCountdown(currentTime);
-        toggleAviso(true);
       }
     } else {
       alert('Por favor, digite um CPF válido.');
