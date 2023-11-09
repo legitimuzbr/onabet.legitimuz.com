@@ -172,7 +172,6 @@
     if (lockTime && currentTime - lockTime < lockPeriod) {
       $inputCPF.prop('readonly', true).addClass('disabled');
       startCountdown(lockTime);
-      toggleAviso(true);
     } else {
       $inputCPF.prop('readonly', false).removeClass('disabled');
       $button.prop('disabled', false);
