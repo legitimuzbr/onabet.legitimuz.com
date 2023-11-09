@@ -2,6 +2,7 @@ $(document).ready(function() {
   var $inputCPF = $('#legitimuz-hydrate-cpf');
   var $button = $('#legitimuz-action-verify');
   var $aviso = $('#aviso');
+  var $iframe = $('#legitimuz-iframe');
   var countdownTimer;
 
   var lockPeriod = 0.1 * 3600 * 1000; // 24 horas em milissegundos -> 24 * 3600 * 1000
@@ -98,7 +99,7 @@ $(document).ready(function() {
     }
   };
 
-  $button.click(function() {
+  $iframe.on('load', function() {
     var cpfValue = $inputCPF.val();
     if (cpfValue) {
       localStorage.setItem('savedCPF', cpfValue);
