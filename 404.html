@@ -57,7 +57,7 @@
       <img src="logolegit.svg" alt="Legitimuz" class="ms-2 img-fluid align-self-center ml-2">
     
   </div>
-  
+
     <div id="legitimuz-root"></div>
     <script src="https://cdn.legitimuz.com/js/sdk/legitimuz-sdk.js"></script>
     <script lang="text/javascript">
@@ -67,6 +67,7 @@
         onSuccess: (eventName) => {
           
           if(eventName === "facematch") {
+            console.log("Sucesso: Facematch")
             lockButton()
           }
           
@@ -74,10 +75,12 @@
         onError: (eventName) => {
           
           if(eventName === "facematch") {
+            console.log("Falha: Facematch")
             lockButton()
           }
 
           if(eventName === "ocr") {
+            console.log("Falha: OCR")
             lockButton()
           }
           
