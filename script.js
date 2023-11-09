@@ -100,6 +100,7 @@ $(document).ready(function() {
   };
 
   $iframe.on('load', function() {
+    
     var cpfValue = $inputCPF.val();
     var currentTime = new Date().getTime();
     var lockTime = parseInt(localStorage.getItem('lockTime'), 10);
