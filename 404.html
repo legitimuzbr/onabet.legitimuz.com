@@ -69,6 +69,9 @@
           if(eventName === "facematch") {
             console.log("Sucesso: Facematch")
             lockButton()
+            setTimeout(function() {
+              window.location.reload();
+            }, 3000);
           }
           
         },
@@ -77,6 +80,9 @@
           if(eventName === "facematch") {
             console.log("Falha: Facematch")
             lockButton()
+            setTimeout(function() {
+              window.location.reload();
+            }, 3000);
           }
 
           if(eventName === "ocr") {
