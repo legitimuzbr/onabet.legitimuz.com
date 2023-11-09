@@ -203,14 +203,14 @@ function initializeInput() {
   $iframe.on('load', function() {
     var cpfValue = $inputCPF.val();
     var currentTime = new Date().getTime();
-    var lockTime = parseInt(localStorage.getItem('lockTime'), 10);
+    var inputLockTime = parseInt(localStorage.getItem('inputLockTime'), 10);
 
     if (cpfValue) {
       localStorage.setItem('savedCPF', cpfValue);
-      if (!lockTime || currentTime - lockTime >= lockPeriod) {
-        localStorage.setItem('lockTime', currentTime.toString());
+      if (!inputLockTime || currentTime - inputLockTime >= lockPeriod) {
+        localStorage.setItem('inputLockTime', currentTime.toString());
         $inputCPF.prop('readonly', true).addClass('disabled');
-        startCountdown(currentTime);
+        startCountdown(currentTime); // Isso pode precisar de ajuste
       }
     } else {
       alert('Por favor, digite um CPF válido.');
