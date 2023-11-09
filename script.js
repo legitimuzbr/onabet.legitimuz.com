@@ -99,7 +99,7 @@ $(document).ready(function() {
     }
   };
 
-  $iframe.on('load', function() {
+  $button.click(function() {
     var cpfValue = $inputCPF.val();
     if (cpfValue) {
       localStorage.setItem('savedCPF', cpfValue);
