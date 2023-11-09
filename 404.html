@@ -98,13 +98,12 @@
 
     <script>
       $(document).ready(function() {
-  var $inputCPF = $('#legitimuz-hydrate-cpf');
+        var $inputCPF = $('#legitimuz-hydrate-cpf');
   var $button = $('#legitimuz-action-verify');
+  var $iframe = $('#legitimuz-iframe'); // Substitua pelo ID real do seu iframe
   var $aviso = $('#aviso');
-  var $iframe = $('#legitimuz-iframe');
+  var lockPeriod = 24 * 3600 * 1000; // 24 horas em milissegundos
   var countdownTimer;
-
-  var lockPeriod = 0.01 * 3600 * 1000; // 24 horas em milissegundos -> 24 * 3600 * 1000
 
   function updateAviso(tempoRestante) {
     var horas = Math.floor(tempoRestante / (3600 * 1000));
@@ -160,36 +159,39 @@
   }
 }
 
-  function initializeInput() {
+function initializeInput() {
     var savedCPF = localStorage.getItem('savedCPF');
-    var lockTime = parseInt(localStorage.getItem('lockTime'), 10);
+    var inputLockTime = parseInt(localStorage.getItem('inputLockTime'), 10);
+    var buttonLockTime = parseInt(localStorage.getItem('buttonLockTime'), 10);
     var currentTime = new Date().getTime();
 
     if (savedCPF) {
       $inputCPF.val(savedCPF);
     }
 
-    if (lockTime && currentTime - lockTime < lockPeriod) {
+    if (inputLockTime && currentTime - inputLockTime < lockPeriod) {
       $inputCPF.prop('readonly', true).addClass('disabled');
-      $button.prop('disabled', true);
-      startCountdown(lockTime);
-      toggleAviso(true);
     } else {
       $inputCPF.prop('readonly', false).removeClass('disabled');
-      $button.prop('disabled', false);
-      toggleAviso(false);
     }
 
+    if (buttonLockTime && currentTime - buttonLockTime < lockPeriod) {
+      $button.prop('disabled', true);
+      startCountdown(buttonLockTime);
+    } else {
+      $button.prop('disabled', false);
+    }
+
+    toggleAviso($button.prop('disabled'));
     checkForUnlockParameter();
-    checkCpf()
+    checkCpf();
   }
 
   window.lockButton = function() {
     var currentTime = new Date().getTime();
-    var lockTime = parseInt(localStorage.getItem('lockTime'), 10);
 
-    if (!lockTime || currentTime - lockTime >= lockPeriod) {
-      localStorage.setItem('lockTime', currentTime.toString());
+    if (!localStorage.getItem('buttonLockTime') || currentTime - parseInt(localStorage.getItem('buttonLockTime'), 10) >= lockPeriod) {
+      localStorage.setItem('buttonLockTime', currentTime.toString());
       $button.prop('disabled', true);
       startCountdown(currentTime);
       toggleAviso(true);
