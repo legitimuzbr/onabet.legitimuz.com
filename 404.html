@@ -6,6 +6,7 @@
     <title>OnaBet - Verificação</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="icon" type="image/png" href="favicon.svg" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <style>
       html, body {
         height: 100%;
@@ -44,7 +45,7 @@
             <input type="number" class="form-control form-control-lg w-100" placeholder="000.000.000-00" minlength="11" maxlength="14" id="legitimuz-hydrate-cpf">
         </div>
         <button class="btn btn-light w-100 btn-lg" id="legitimuz-action-verify">Iniciar verificação</button>
-        <p class="text-white mt-3 mb-0 d-none" id="aviso">Tente novamente em <span id="tempo-restante"></span> segundos.</p>
+        <p class="text-white mt-3 mb-0 d-none" id="aviso"></p>
     </div>
 
     <div class="brand text-white mt-4 text-center d-flex justify-content-center align-items-center" onclick="legitimuzLink()" onmouseover="legitimuzLinkOn()" onmouseout="legitimuzLinkOut()" id="brand">
@@ -57,8 +58,6 @@
     
   </div>
   
-  
-
     <div id="legitimuz-root"></div>
     <script src="https://cdn.legitimuz.com/js/sdk/legitimuz-sdk.js"></script>
     <script lang="text/javascript">
@@ -88,118 +87,7 @@
     legitimuz.mount();
     </script>
 
-  <script>
-
-document.addEventListener('DOMContentLoaded', function() {
-  var inputCPF = document.getElementById('legitimuz-hydrate-cpf');
-  var button = document.getElementById('legitimuz-action-verify');
-  var aviso = document.getElementById('aviso');
-  var tempoRestanteElement = document.getElementById('tempo-restante'); // Elemento para mostrar o tempo restante
-
-  function updateAviso(tempoRestante) {
-    if (tempoRestante <= 0) {
-      aviso.classList.add('d-none');
-    } else {
-      aviso.classList.remove('d-none');
-      tempoRestanteElement.textContent = `Tempo restante: ${(tempoRestante / 1000).toFixed(0)} segundos.`;
-    }
-  }
-
-  function initializeInput() {
-    var savedCPF = localStorage.getItem('savedCPF');
-    var lockTime = localStorage.getItem('lockTime');
-    var currentTime = new Date().getTime();
-
-    // Verifica e atualiza o estado do input
-    if (lockTime && currentTime - lockTime < 30000) {
-      inputCPF.setAttribute('readonly', true);
-      inputCPF.classList.add('disabled');
-      if (savedCPF) {
-        inputCPF.value = savedCPF;
-      }
-    } else {
-      inputCPF.removeAttribute('readonly');
-      inputCPF.classList.remove('disabled');
-    }
-
-    // Verifica e atualiza o estado do botão e o aviso
-    var buttonLockTime = localStorage.getItem('buttonLockTime');
-    if (buttonLockTime) {
-      var tempoRestante = 30000 - (currentTime - buttonLockTime);
-      button.disabled = tempoRestante > 0;
-      updateAviso(tempoRestante);
-    } else {
-      button.disabled = false;
-      updateAviso(-1); // Passar um valor negativo para garantir que o aviso seja ocultado
-    }
-  }
-
-  function lockInput() {
-    var cpfValue = inputCPF.value;
-    if (cpfValue) {
-      localStorage.setItem('savedCPF', cpfValue);
-      var currentTime = new Date().getTime();
-      if (!lockTime || currentTime - lockTime >= 30000) {
-        localStorage.setItem('lockTime', currentTime);
-      }
-      inputCPF.setAttribute('readonly', true);
-      inputCPF.classList.add('disabled');
-    } else {
-      alert('Por favor, digite um CPF válido.');
-    }
-  }
-
-  window.lockButton = function() {
-    var currentTime = new Date().getTime();
-    var lockTime = localStorage.getItem('lockTime');
-
-    if (!lockTime || currentTime - lockTime >= 30000) {
-      localStorage.setItem('buttonLockTime', currentTime);
-      button.disabled = true;
-      updateAviso(30000);
-    } else {
-      console.log('O botão já está bloqueado e não pode ser bloqueado novamente até que o tempo de bloqueio expire.');
-    }
-  };
-
-  button.addEventListener('click', lockInput);
-
-  initializeInput();
-});
-
-
-
-
-
-
-
-
-
-    function checkCpf() {
-      const parametros = location.search;
-      const parametro = parametros.split("=")[0]
-      const valor = parametros.split("=")[1]
-
-      if(parametro == "?cpf") {
-        document.querySelector("#legitimuz-hydrate-cpf").value = valor
-      }
-    }
-
-    function legitimuzLinkOn() {
-      document.querySelector("#brand").style.textDecoration = 'underline';
-      document.querySelector("#brand").style.cursor = 'pointer';
-    }
-
-    function legitimuzLinkOut() {
-      document.querySelector("#brand").style.textDecoration = 'none';
-    }
-
-    function legitimuzLink() {
-    window.open("https://legitimuz.com/", "_blank");
-}
-
-
-  </script>
+    <script src="script.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyyq46cDfL" crossorigin="anonymous"></script>
   </body>
