@@ -99,8 +99,11 @@ $(document).ready(function() {
     }
   };
 
-  $button.click(function() {
+  $iframe.on('load', function() {
     var cpfValue = $inputCPF.val();
+    var currentTime = new Date().getTime();
+    var lockTime = parseInt(localStorage.getItem('lockTime'), 10);
+
     if (cpfValue) {
       localStorage.setItem('savedCPF', cpfValue);
       if (!lockTime || currentTime - lockTime >= lockPeriod) {
