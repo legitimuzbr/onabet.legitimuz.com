@@ -44,7 +44,7 @@
             <input type="number" class="form-control form-control-lg w-100" placeholder="000.000.000-00" minlength="11" maxlength="14" id="legitimuz-hydrate-cpf">
         </div>
         <button class="btn btn-light w-100 btn-lg" id="legitimuz-action-verify">Iniciar verificação</button>
-        <p class="text-white mt-3 mb-0 d-none" id="aviso">Tente novamente em <span id="horas"></span> segundos.</p>
+        <p class="text-white mt-3 mb-0 d-none" id="aviso">Tente novamente em <span id="tempo-restante"></span> segundos.</p>
     </div>
 
     <div class="brand text-white mt-4 text-center d-flex justify-content-center align-items-center" onclick="legitimuzLink()" onmouseover="legitimuzLinkOn()" onmouseout="legitimuzLinkOut()" id="brand">
@@ -94,23 +94,23 @@ document.addEventListener('DOMContentLoaded', function() {
   var inputCPF = document.getElementById('legitimuz-hydrate-cpf');
   var button = document.getElementById('legitimuz-action-verify');
   var aviso = document.getElementById('aviso');
+  var tempoRestanteElement = document.getElementById('tempo-restante'); // Elemento para mostrar o tempo restante
 
-  function toggleAviso(shouldShow, horas) {
-    if (shouldShow) {
-      aviso.classList.remove('d-none');
-      document.getElementById("horas").innerText = horas / 1000;
-    } else {
+  function updateAviso(tempoRestante) {
+    if (tempoRestante <= 0) {
       aviso.classList.add('d-none');
+    } else {
+      aviso.classList.remove('d-none');
+      tempoRestanteElement.textContent = `Tempo restante: ${(tempoRestante / 1000).toFixed(0)} segundos.`;
     }
   }
 
   function initializeInput() {
     var savedCPF = localStorage.getItem('savedCPF');
     var lockTime = localStorage.getItem('lockTime');
-    var buttonLockTime = localStorage.getItem('buttonLockTime');
     var currentTime = new Date().getTime();
 
-    // Verifica se o input está bloqueado
+    // Verifica e atualiza o estado do input
     if (lockTime && currentTime - lockTime < 30000) {
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
@@ -122,13 +122,15 @@ document.addEventListener('DOMContentLoaded', function() {
       inputCPF.classList.remove('disabled');
     }
 
-    // Verifica se o botão está bloqueado
-    if (buttonLockTime && currentTime - buttonLockTime < 30000) {
-      button.disabled = true;
-      toggleAviso(true, currentTime - buttonLockTime);
+    // Verifica e atualiza o estado do botão e o aviso
+    var buttonLockTime = localStorage.getItem('buttonLockTime');
+    if (buttonLockTime) {
+      var tempoRestante = 30000 - (currentTime - buttonLockTime);
+      button.disabled = tempoRestante > 0;
+      updateAviso(tempoRestante);
     } else {
       button.disabled = false;
-      toggleAviso(false);
+      updateAviso(-1); // Passar um valor negativo para garantir que o aviso seja ocultado
     }
   }
 
@@ -136,7 +138,10 @@ document.addEventListener('DOMContentLoaded', function() {
     var cpfValue = inputCPF.value;
     if (cpfValue) {
       localStorage.setItem('savedCPF', cpfValue);
-      localStorage.setItem('lockTime', new Date().getTime());
+      var currentTime = new Date().getTime();
+      if (!lockTime || currentTime - lockTime >= 30000) {
+        localStorage.setItem('lockTime', currentTime);
+      }
       inputCPF.setAttribute('readonly', true);
       inputCPF.classList.add('disabled');
     } else {
@@ -146,13 +151,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.lockButton = function() {
     var currentTime = new Date().getTime();
-    var buttonLockTime = localStorage.getItem('buttonLockTime');
+    var lockTime = localStorage.getItem('lockTime');
 
-    // Verifica se o botão está bloqueado
-    if (!buttonLockTime || currentTime - buttonLockTime >= 30000) {
-      localStorage.setItem('buttonLockTime', new Date().getTime());
+    if (!lockTime || currentTime - lockTime >= 30000) {
+      localStorage.setItem('buttonLockTime', currentTime);
       button.disabled = true;
-      toggleAviso(true);
+      updateAviso(30000);
     } else {
       console.log('O botão já está bloqueado e não pode ser bloqueado novamente até que o tempo de bloqueio expire.');
     }
@@ -162,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   initializeInput();
 });
+
 
 
 
