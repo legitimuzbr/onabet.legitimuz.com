@@ -104,7 +104,7 @@
   var $iframe = $('#legitimuz-iframe');
   var countdownTimer;
 
-  var lockPeriod = 24 * 3600 * 1000; // 24 horas em milissegundos -> 24 * 3600 * 1000
+  var lockPeriod = 0.01 * 3600 * 1000; // 24 horas em milissegundos -> 24 * 3600 * 1000
 
   function updateAviso(tempoRestante) {
     var horas = Math.floor(tempoRestante / (3600 * 1000));
@@ -171,7 +171,9 @@
 
     if (lockTime && currentTime - lockTime < lockPeriod) {
       $inputCPF.prop('readonly', true).addClass('disabled');
+      $button.prop('disabled', true);
       startCountdown(lockTime);
+      toggleAviso(true);
     } else {
       $inputCPF.prop('readonly', false).removeClass('disabled');
       $button.prop('disabled', false);
